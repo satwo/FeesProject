@@ -1,0 +1,23 @@
+extends layout
+
+block content
+
+  h4= title  
+
+  | Transaction Type:
+  br
+  input(type='radio',name='txType',value='Segwit',id='Segwit',onclick='showSegwitData()',checked="true") 
+  | SegWit
+  br
+  input(type="radio",name="txType",value="Legacy",id="Legacy",onclick="showLegacyData()") 
+  | Legacy (non-SegWit)
+  br
+
+  div.bwChart#txFees
+  
+  div.bwChart#satsPerByte
+  
+  div.bwChart#txSize
+  
+
+  script(type='text/javascript', src='/javascripts/script.js')
