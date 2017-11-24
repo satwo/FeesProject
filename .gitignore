@@ -58,15 +58,10 @@ typings/
 .env
 
 #tx data files
-/public/data.json
 data.json.last
-<<<<<<< HEAD
-.transtats.txt
+data.json
+transtats.txt
 
 #vs code configuration
 .vscode
-=======
-.transtats.txt
->>>>>>> parent of 104be76... add .vscode config
-data.json
-transtats.txt
+
