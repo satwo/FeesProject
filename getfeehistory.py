@@ -21,7 +21,7 @@ data = []
 
 if os.path.exists(jsonfile):
     with open(jsonfile) as json_data:
-        if os.stat(public).st_size > 0:
+        if os.stat(jsonfile).st_size > 0:
             data = json.load(json_data)
 else:
     open(jsonfile, 'w')
