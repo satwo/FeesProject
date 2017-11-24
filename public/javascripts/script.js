@@ -8,7 +8,7 @@ fetch('./data.json').then(function (response) {
 }).then(function (data) {
   blockData = data.sort(function (a, b) { return a.Height - b.Height; });
 
-  var sliced = blockData.slice(blockData.length-6, blockData.length);
+  var sliced = blockData.slice(blockData.length-12, blockData.length);
 
   RenderCharts(sliced);
 });
