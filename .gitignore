@@ -60,4 +60,11 @@ typings/
 #tx data files
 ./public/data.json
 .data.json.last
+<<<<<<< HEAD
 .transtats.txt
+
+#vs code configuration
+#.vscode
+=======
+.transtats.txt
+>>>>>>> parent of 104be76... add .vscode config
