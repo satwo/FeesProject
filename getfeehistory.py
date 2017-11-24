@@ -13,15 +13,15 @@ from decimal import Decimal
 bitcoin.SelectParams('mainnet')
 p = RawProxy()
 
-fw = open('transtats.txt','w')
+fw = open('public/transtats.txt','w')
 writer = csv.writer(fw)
 
-jsonfile = 'data.json'
+jsonfile = 'public/data.json'
 data = []
 
 if os.path.exists(jsonfile):
-    with open('data.json') as json_data:
-        if os.stat('data.json').st_size > 0:
+    with open(jsonfile) as json_data:
+        if os.stat(public).st_size > 0:
             data = json.load(json_data)
 else:
     open(jsonfile, 'w')
@@ -275,7 +275,7 @@ fw.close()
 
 sorted_list = sorted(data, key=lambda k: int(k['Height']), reverse=False)
 
-shutil.copyfile('data.json', 'data.json.last')
+shutil.copyfile(jsonfile, 'public/data.json.last')
 
 with open(jsonfile, 'w') as outfile:
     json.dump(sorted_list, outfile, sort_keys=True)
