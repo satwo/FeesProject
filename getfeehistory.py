@@ -28,7 +28,9 @@ else:
 
 firstSegwitBlock = 481824
 
-height = 495497
+currentHeight = p.getblock(p.getbestblockhash())['height']
+
+startingHeight = currentHeight - 12
 
 def process_block(height, blockhash):
 
@@ -261,13 +263,13 @@ def add_new_block(height, blockhash):
             'Hash': blockhash
     })
 
-while height < p.getblock(p.getbestblockhash())['height']:
-    height += 1
-    print('Block height: ' + str(height))
-    blockhash = p.getblockhash(height)
+while startingHeight < p.getblock(p.getbestblockhash())['height']:
+    startingHeight += 1
+    print('Block height: ' + str(startingHeight))
+    blockhash = p.getblockhash(startingHeight)
     block = p.getblock(blockhash)
 
-    process_block(height, blockhash)
+    process_block(startingHeight, blockhash)
 
 fw.close()
 
