@@ -4,15 +4,23 @@ block content
 
   h4= title  
 
-  | Transaction Type:
-  br
-  input(type='radio',name='txType',value='Segwit',id='Segwit',onclick='showSegwitData()',checked="true") 
-  | SegWit
-  br
-  input(type="radio",name="txType",value="Legacy",id="Legacy",onclick="showLegacyData()") 
-  | Legacy (non-SegWit)
-  br
+  
+  div(style="float:left;")
+    | Transaction Type:
+    input(type="radio",name="txType",value="radioSegwit",id="radioSegwit",onclick="showSegwitData()",checked="true") 
+    | SegWit
+    input(type="radio",name="txType",value="radioLegacy",id="radioLegacy",onclick="showLegacyData()") 
+    | Legacy (non-SegWit)
+  
+  div(style="float:right;")
+    input(type="radio",name="chartCategory",value="radioFeesSpB",id="radioFeesSpB",onclick="showFeesSpB()",checked="true") 
+    | Tx Fees (Sat/Byte)
+    input(type="radio",name="chartCategory",value="radioTxFees",id="radioTxFees",onclick="showTxFees()") 
+    | Tx Fees (BTC / Tx)
+    input(type="radio",name="chartCategory",value="radioTxSize",id="radioTxSize",onclick="showTxSize()") 
+    | Tx Size (Bytes)
 
+  br
   div.bwChart#txFees
   
   div.bwChart#satsPerByte
@@ -20,4 +28,4 @@ block content
   div.bwChart#txSize
   
 
-  script(type='text/javascript', src='/javascripts/script.js')
+  script(type="text/javascript", src="/javascripts/script.js")
