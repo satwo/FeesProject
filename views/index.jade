@@ -19,20 +19,15 @@ block content
     
     div(style="float:right;")
       input(type="radio",name="chartCategory",value="radioFeesSpB",id="radioFeesSpB",onclick="showFeesSpB()",checked="true") 
-      | Fees (Sat / Byte)
+      | Fees (Sat/Byte)
       input(type="radio",name="chartCategory",value="radioTxFees",id="radioTxFees",onclick="showTxFees()") 
-      | Fees (BTC / Tx)
+      | Fees (BTC)
       input(type="radio",name="chartCategory",value="radioTxFeesUSD",id="radioTxFeesUSD",onclick="showTxFeesUSD()") 
-      | Fees (USD / Tx)
+      | Fees (USD)
       input(type="radio",name="chartCategory",value="radioTxSize",id="radioTxSize",onclick="showTxSize()") 
       | Size (Bytes)
 
   br
-  div.bwChart#txFees
-  
-  div.bwChart#satsPerByte
-  
-  div.bwChart#txSize
-  
+  div.bwChart#datavis
 
   script(type="text/javascript", src="/javascripts/script.js")

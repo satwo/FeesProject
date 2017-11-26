@@ -7,6 +7,12 @@ import shutil
 import os
 import simplejson
 from decimal import Decimal
+import requests
+
+
+r = requests.get('http://coincap.io/history/1day/BTC')
+usdData = r.json()
+priceData = usdData["price"]
 
 #bitcoin.SelectParams('regtest')
 #bitcoin.SelectParams('testnet')
@@ -31,6 +37,9 @@ firstSegwitBlock = 481824
 currentHeight = p.getblock(p.getbestblockhash())['height']
 
 startingHeight = currentHeight - 36
+
+# def nearest(items, pivot):
+#     return min(items, key=lambda x: abs(x - pivot))
 
 def process_block(height, blockhash):
 
@@ -60,10 +69,19 @@ def add_new_block(height, blockhash):
     total_fees = 0
     block_timestamp = block['time']
 
+    #get closest USD price (Coincap.io) before block mined
+
+    for idx,e in enumerate(priceData):
+        timestamp,price = e
+        if block_timestamp < timestamp:
+            break
+    USD_Price = priceData[idx-1][1]
+
     segwitTxCount = 0
     legacyTxCount = 0
 
     fees = {'SegWit':[],'Legacy':[]}
+    feesUSD = {'SegWit':[],'Legacy':[]}
     inputs = {'SegWit':[],'Legacy':[]}
     outputs = {'SegWit':[],'Legacy':[]}
     sizes = {'SegWit':[],'Legacy':[]}
@@ -104,6 +122,7 @@ def add_new_block(height, blockhash):
                 legacyTxCount += 1
 
             fees[ttype].append(float(tran_fee))
+            feesUSD[ttype].append(round((float(tran_fee) * float(USD_Price)), 2))
             inputs[ttype].append(num_inputs)
             outputs[ttype].append(num_outputs)
             sizes[ttype].append(float(size))
@@ -227,6 +246,7 @@ def add_new_block(height, blockhash):
                 'satsPerByte_list' : satsPerByte['SegWit'],
                 'txFees_list' : fees['SegWit'],
                 'txSize_list': sizes['SegWit'],
+                'txFeesUSD_list': feesUSD['SegWit'],
                 'txCount': segwitTxCount,
                 'sizeInBytes': round(size_segwit, 8),
                 'totalFees': round(fees_segwit, 8),
@@ -245,6 +265,7 @@ def add_new_block(height, blockhash):
                 'satsPerByte_list' : satsPerByte['Legacy'],
                 'txFees_list' : fees['Legacy'],
                 'txSize_list': sizes['Legacy'],
+                'txFeesUSD_list': feesUSD['Legacy'],
                 'txCount': legacyTxCount,
                 'sizeInBytes': round(size_legacy, 8),
                 'totalFees': round(fees_legacy, 8),
@@ -260,6 +281,7 @@ def add_new_block(height, blockhash):
             },
             'Height': height,
             'Timestamp': block_timestamp,
+            'USD_Price': USD_Price,
             'Hash': blockhash
     })
 

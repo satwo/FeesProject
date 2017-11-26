@@ -8,6 +8,7 @@ var chartType = "SPB";
 
 var yAxisSpB;
 var yAxisTxFees;
+var yAxisTxFeesUSD;
 var yAxisTxSize;
 var range;
 var isOutlier;
@@ -45,6 +46,11 @@ var yAxisLabelSpB = {
 
 var yAxisLabelTxFees = {
   value: "BTC / Tx",
+  font: AxisLabelFont
+}
+
+var yAxisLabelTxFeesUSD = {
+  value: "USD / Tx",
   font: AxisLabelFont
 }
 
@@ -99,6 +105,7 @@ function RenderCharts(blockData) {
         "name": Math.random(),
         "SPB": block.SegWitTxData.satsPerByte_list[i],
         "txFee": block.SegWitTxData.txFees_list[i],
+        "txFeeUSD": block.SegWitTxData.txFeesUSD_list[i],
         "txSize": block.SegWitTxData.txSize_list[i]
       };
       segwitData.push(dataPoint);
@@ -112,6 +119,7 @@ function RenderCharts(blockData) {
         "name": Math.random(),
         "SPB": block.LegacyTxData.satsPerByte_list[i],
         "txFee": block.LegacyTxData.txFees_list[i],
+        "txFeeUSD": block.LegacyTxData.txFeesUSD_list[i],
         "txSize": block.LegacyTxData.txSize_list[i]
       };
       legacyData.push(dataPoint);
@@ -125,6 +133,14 @@ function RenderCharts(blockData) {
     axis: true,
     grid: true,
     label: yAxisLabelTxFees,
+    mute: isOutlier
+  }
+
+  yAxisTxFeesUSD = {
+    value: "txFeeUSD",
+    axis: true,
+    grid: true,
+    label: yAxisLabelTxFeesUSD,
     mute: isOutlier
   }
   
@@ -146,7 +162,7 @@ function RenderCharts(blockData) {
   }
 
   visualization = d3plus.viz()
-    .container("#txFees")
+    .container("#datavis")
     .data(segwitData)
     .type("box")
     .id("name")
@@ -205,6 +221,9 @@ function setRange(txType, chartType) {
     case "txFee":
       range = outlierRange(data.map(d => d.txFee))
       break;
+    case "txFeeUSD":
+      range = outlierRange(data.map(d => d.txFeeUSD))
+      break;
     case "txSize":
       range = outlierRange(data.map(d => d.txSize))
       break;
@@ -217,6 +236,7 @@ function setRange(txType, chartType) {
 
   yAxisSpB["mute"] = showOutliers ? [] : isOutlier;
   yAxisTxFees["mute"] = showOutliers ? [] : isOutlier;
+  yAxisTxFeesUSD["mute"] = showOutliers ? [] : isOutlier;
   yAxisTxSize["mute"] = showOutliers ? [] : isOutlier;
 }
 
@@ -253,6 +273,17 @@ function showTxFees() {
     .draw();
 }
 
+function showTxFeesUSD() {
+  
+    chartType = "txFeeUSD";
+  
+    setRange(txType, chartType);
+  
+    visualization
+      .y(yAxisTxFeesUSD)
+      .draw();
+  }
+
 function showTxSize() {
 
   chartType = "txSize";
@@ -286,6 +317,7 @@ function toggleOutliers(cb) {
 
   yAxisSpB["mute"] = showOutliers ? [] : isOutlier;
   yAxisTxFees["mute"] = showOutliers ? [] : isOutlier;
+  yAxisTxFeesUSD["mute"] = showOutliers ? [] : isOutlier;
   yAxisTxSize["mute"] = showOutliers ? [] : isOutlier;
 
   //console.log(yAxisSpB);
@@ -298,6 +330,9 @@ function toggleOutliers(cb) {
       break;
     case "txFee":
       visualization.y(yAxisTxFees).draw();
+      break;
+    case "txFeeUSD":
+      visualization.y(yAxisTxFeesUSD).draw();
       break;
     case "txSize":
       visualization.y(yAxisTxSize).draw();
