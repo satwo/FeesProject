@@ -30,7 +30,7 @@ firstSegwitBlock = 481824
 
 currentHeight = p.getblock(p.getbestblockhash())['height']
 
-startingHeight = currentHeight - 12
+startingHeight = currentHeight - 36
 
 def process_block(height, blockhash):
 
