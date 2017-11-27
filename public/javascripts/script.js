@@ -321,6 +321,9 @@ function toggleOutliers(cb) {
   yAxisTxFees["mute"] = showOutliers ? [] : isOutlier;
   yAxisTxFeesUSD["mute"] = showOutliers ? [] : isOutlier;
   yAxisTxVSize["mute"] = showOutliers ? [] : isOutlier;
+
+  setRange(txType, chartType);
+
   switch (chartType) {
     case "SPB":
       visualization.y(yAxisSpB).draw();
