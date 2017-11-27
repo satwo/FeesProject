@@ -9,7 +9,7 @@ var chartType = "SPB";
 var yAxisSpB;
 var yAxisTxFees;
 var yAxisTxFeesUSD;
-var yAxisTxSize;
+var yAxisTxVSize;
 var range;
 var isOutlier;
 
@@ -18,7 +18,9 @@ fetch('./data.json').then(function (response) {
 }).then(function (data) {
   blockData = data.sort(function (a, b) { return a.Height - b.Height; });
 
-  var sliced = blockData.slice(blockData.length - 36, blockData.length);
+  var blocksBack = 24; 
+
+  var sliced = blockData.slice(blockData.length - blocksBack, blockData.length);
 
   RenderCharts(sliced);
 });
@@ -54,8 +56,8 @@ var yAxisLabelTxFeesUSD = {
   font: AxisLabelFont
 }
 
-var yAxisLabelTxSize = {
-  value: "Tx Size (Bytes)",
+var yAxisLabelTxVSize = {
+  value: "Tx Size (VBytes)",
   font: AxisLabelFont
 }
 
@@ -106,7 +108,7 @@ function RenderCharts(blockData) {
         "SPB": block.SegWitTxData.satsPerByte_list[i],
         "txFee": block.SegWitTxData.txFees_list[i],
         "txFeeUSD": block.SegWitTxData.txFeesUSD_list[i],
-        "txSize": block.SegWitTxData.txSize_list[i]
+        "txVSize": block.SegWitTxData.txVSize_list[i]
       };
       segwitData.push(dataPoint);
     }
@@ -120,7 +122,7 @@ function RenderCharts(blockData) {
         "SPB": block.LegacyTxData.satsPerByte_list[i],
         "txFee": block.LegacyTxData.txFees_list[i],
         "txFeeUSD": block.LegacyTxData.txFeesUSD_list[i],
-        "txSize": block.LegacyTxData.txSize_list[i]
+        "txVSize": block.LegacyTxData.txVSize_list[i]
       };
       legacyData.push(dataPoint);
     }
@@ -144,11 +146,11 @@ function RenderCharts(blockData) {
     mute: isOutlier
   }
   
-  yAxisTxSize = {
-    value: "txSize",
+  yAxisTxVSize = {
+    value: "txVSize",
     axis: true,
     grid: true,
-    label: yAxisLabelTxSize,
+    label: yAxisLabelTxVSize,
     mute: isOutlier
   }
 
@@ -224,8 +226,8 @@ function setRange(txType, chartType) {
     case "txFeeUSD":
       range = outlierRange(data.map(d => d.txFeeUSD))
       break;
-    case "txSize":
-      range = outlierRange(data.map(d => d.txSize))
+    case "txVSize":
+      range = outlierRange(data.map(d => d.txVSize))
       break;
     default:
       break;
@@ -237,7 +239,7 @@ function setRange(txType, chartType) {
   yAxisSpB["mute"] = showOutliers ? [] : isOutlier;
   yAxisTxFees["mute"] = showOutliers ? [] : isOutlier;
   yAxisTxFeesUSD["mute"] = showOutliers ? [] : isOutlier;
-  yAxisTxSize["mute"] = showOutliers ? [] : isOutlier;
+  yAxisTxVSize["mute"] = showOutliers ? [] : isOutlier;
 }
 
 function showSegwitData() {
@@ -284,14 +286,14 @@ function showTxFeesUSD() {
       .draw();
   }
 
-function showTxSize() {
+function showTxVSize() {
 
-  chartType = "txSize";
+  chartType = "txVSize";
 
   setRange(txType, chartType);
 
   visualization
-    .y(yAxisTxSize)
+    .y(yAxisTxVSize)
     .draw();
 }
 
@@ -318,12 +320,7 @@ function toggleOutliers(cb) {
   yAxisSpB["mute"] = showOutliers ? [] : isOutlier;
   yAxisTxFees["mute"] = showOutliers ? [] : isOutlier;
   yAxisTxFeesUSD["mute"] = showOutliers ? [] : isOutlier;
-  yAxisTxSize["mute"] = showOutliers ? [] : isOutlier;
-
-  //console.log(yAxisSpB);
-  //console.log(yAxisTxFees);
-  //console.log(yAxisTxSize);
-
+  yAxisTxVSize["mute"] = showOutliers ? [] : isOutlier;
   switch (chartType) {
     case "SPB":
       visualization.y(yAxisSpB).draw();
@@ -334,8 +331,8 @@ function toggleOutliers(cb) {
     case "txFeeUSD":
       visualization.y(yAxisTxFeesUSD).draw();
       break;
-    case "txSize":
-      visualization.y(yAxisTxSize).draw();
+    case "txVSize":
+      visualization.y(yAxisTxVSize).draw();
       break;
     default:
       visualization.draw();

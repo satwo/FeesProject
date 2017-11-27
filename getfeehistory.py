@@ -36,7 +36,7 @@ firstSegwitBlock = 481824
 
 currentHeight = p.getblock(p.getbestblockhash())['height']
 
-startingHeight = currentHeight - 36
+startingHeight = currentHeight - 24 
 
 # def nearest(items, pivot):
 #     return min(items, key=lambda x: abs(x - pivot))
@@ -85,7 +85,9 @@ def add_new_block(height, blockhash):
     inputs = {'SegWit':[],'Legacy':[]}
     outputs = {'SegWit':[],'Legacy':[]}
     sizes = {'SegWit':[],'Legacy':[]}
+    vsizes = {'SegWit':[],'Legacy':[]}
     satsPerByte = {'SegWit':[],'Legacy':[]}
+    satsPerVByte = {'SegWit':[],'Legacy':[]}
 
     #iterate through transactions
     for tnum,txid in enumerate(transactions):
@@ -94,6 +96,7 @@ def add_new_block(height, blockhash):
         decoded_tx = p.decoderawtransaction(raw_tx)
 
         size = decoded_tx['size']
+        vsize = decoded_tx['vsize']
         num_inputs = len(decoded_tx['vin'])
         num_outputs = len(decoded_tx['vout'])
 
@@ -126,14 +129,18 @@ def add_new_block(height, blockhash):
             inputs[ttype].append(num_inputs)
             outputs[ttype].append(num_outputs)
             sizes[ttype].append(float(size))
+            vsizes[ttype].append(float(vsize))
 
             satPerByteFormatted = round(((tran_fee / size) * 100000000))
-
             satsPerByte[ttype].append(satPerByteFormatted)
+
+            satPerVByteFormatted = round(((tran_fee / vsize) * 100000000))
+            satsPerVByte[ttype].append(satPerVByteFormatted)
 
 
     fees_segwit,fees_legacy = sum(fees['SegWit']),sum(fees['Legacy'])
     size_segwit,size_legacy = sum(sizes['SegWit']),sum(sizes['Legacy'])
+    vsize_segwit,vsize_legacy = sum(vsizes['SegWit']),sum(vsizes['Legacy'])
     inputs_segwit,inputs_legacy = sum(inputs['SegWit']),sum(inputs['Legacy'])
     outputs_segwit,outputs_legacy = sum(outputs['SegWit']),sum(outputs['Legacy'])
     tranct_segwit,tranct_legacy = len(fees['SegWit']),len(fees['Legacy'])
@@ -142,9 +149,11 @@ def add_new_block(height, blockhash):
     if (segwitTxCount > 0):
         avgSegwitTxFee = round((fees_segwit / segwitTxCount), 8)
         avgSegwitTxSize = round((size_segwit / segwitTxCount))
+        avgSegwitTxVSize = round((vsize_segwit / segwitTxCount))
     else:
         avgSegwitTxFee = 0
         avgSegwitTxSize = 0
+        avgSegwitTxVSize = 0
 
     if len(satsPerByte['SegWit']):
         meanSPB_segwit= round(np.mean(satsPerByte['SegWit']))
@@ -166,9 +175,11 @@ def add_new_block(height, blockhash):
     if (legacyTxCount > 0):
         avgLegacyTxFee = round((fees_legacy / legacyTxCount), 8)
         avgLegacyTxSize = round((size_legacy / legacyTxCount))
+        avgLegacyTxVSize = round((vsize_legacy / legacyTxCount))
     else:
         avgLegacyTxFee = 0
         avgLegacyTxSize = 0
+        avgLegacyTxVSize = 0
 
     if len(satsPerByte['Legacy']):
         meanSPB_legacy = round(np.mean(satsPerByte['Legacy']))
@@ -244,14 +255,17 @@ def add_new_block(height, blockhash):
         'SegWitTxData': 
             {
                 'satsPerByte_list' : satsPerByte['SegWit'],
+                'satsPerVByte_list' : satsPerVByte['SegWit'],
                 'txFees_list' : fees['SegWit'],
                 'txSize_list': sizes['SegWit'],
+                'txVSize_list': vsizes['SegWit'],
                 'txFeesUSD_list': feesUSD['SegWit'],
                 'txCount': segwitTxCount,
                 'sizeInBytes': round(size_segwit, 8),
                 'totalFees': round(fees_segwit, 8),
                 'averageTxFee': avgSegwitTxFee,
                 'averageTxSize': avgSegwitTxSize,
+                'averageTxVSize': avgSegwitTxVSize,
                 'meanSPB': meanSPB_segwit,
                 'minSPB': minSPB_segwit,
                 'firstQuartileSPB' : firstQuartileSPB_segwit,
@@ -263,14 +277,17 @@ def add_new_block(height, blockhash):
         'LegacyTxData':
             {
                 'satsPerByte_list' : satsPerByte['Legacy'],
+                'satsPerVByte_list' : satsPerVByte['Legacy'],
                 'txFees_list' : fees['Legacy'],
                 'txSize_list': sizes['Legacy'],
+                'txVSize_list': vsizes['Legacy'],
                 'txFeesUSD_list': feesUSD['Legacy'],
                 'txCount': legacyTxCount,
                 'sizeInBytes': round(size_legacy, 8),
                 'totalFees': round(fees_legacy, 8),
                 'averageTxFee': avgLegacyTxFee,
                 'averageTxSize': avgLegacyTxSize,
+                'averageTxVSize': avgLegacyTxVSize,
                 'meanSPB': meanSPB_legacy,
                 'minSPB': minSPB_legacy,
                 'firstQuartileSPB' : firstQuartileSPB_legacy,
