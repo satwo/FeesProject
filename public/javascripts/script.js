@@ -164,7 +164,7 @@ function RenderCharts(blockData) {
   }
 
   visualization = d3plus.viz()
-    .container("#datavis")
+    .container("#datavisD3Plus")
     .data(segwitData)
     .type("box")
     .id("name")
