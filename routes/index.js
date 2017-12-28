@@ -9,7 +9,7 @@ function getBlockData(req, res, next){
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  res.render('index', { title: 'The Bitcoin Fees Project' });
+  res.render('index', { title: 'Segwit vs Legacy Tx Comparison' });
   getBlockData(); 
 });
 

@@ -5,6 +5,10 @@ var selectedOutlierLevel;
 var segwitBlockHeights = [];
 var legacyBlockHeights = [];
 
+var graphDiv = document.getElementById('datavisPlotly');
+
+var chartTypes = ['Tx Fees SPB', 'Tx Fees BTC', 'Tx Fees USD', 'Tx Size'];
+
 function outlierRange(extreme, mild, none) {
     this.extreme = extreme;
     this.mild = mild;
@@ -71,7 +75,7 @@ function ParseData(blockData) {
     selectedOutlierLevel = "none";
     showChart(selectedChartType);
 
-    console.log(txFeesBTC.outlierRange);
+    //console.log(txFeesBTC.outlierRange);
 }
 
 function setUpperRange(data, chart) {
@@ -90,63 +94,105 @@ function showChart(chartType) {
 
     selectedChartType = chartType;
     var thisChart;
+    var data = [];
 
-    switch (chartType) {
-        case "txFeesBTC":
-            thisChart = txFeesBTC;
-            break;
-        case "txFeesUSD":
-            thisChart = txFeesUSD;
-            break;
-        case "txFeesSPB":
-            thisChart = txFeesSPB;
-            break;
-        case "txVSize":
-            thisChart = txVSize;
-            break;
+    /*     switch (chartType) {
+            case "txFeesBTC":
+                thisChart = txFeesBTC;
+                break;
+            case "txFeesUSD":
+                thisChart = txFeesUSD;
+                break;
+            case "txFeesSPB":
+                thisChart = txFeesSPB;
+                break;
+            case "txVSize":
+                thisChart = txVSize;
+                break;
+                default:
+                console.log("NO CHART TYPE SELECTED");
+                break;
+        }
+    
+        switch (selectedOutlierLevel) {
+            case "none":
+                thisChart.yAxis.range = [0, thisChart.outlierRange.none];
+                break;
+            case "mild":
+                thisChart.yAxis.range = [0, thisChart.outlierRange.mild];
+                break;
+            case "extreme":
+                thisChart.yAxis.range = [0, thisChart.outlierRange.extreme];
+                break;
             default:
-            console.log("NO CHART TYPE SELECTED");
+            console.log("NO OUTLIER SELECTED");
             break;
-    }
+        } */
 
-    switch (selectedOutlierLevel) {
-        case "none":
-            thisChart.yAxis.range = [0, thisChart.outlierRange.none];
-            break;
-        case "mild":
-            thisChart.yAxis.range = [0, thisChart.outlierRange.mild];
-            break;
-        case "extreme":
-            thisChart.yAxis.range = [0, thisChart.outlierRange.extreme];
-            break;
-        default:
-        console.log("NO OUTLIER SELECTED");
-        break;
-    }
+    chartTypes.forEach(chart => {
+
+        var thisChart;
+
+        switch (chart) {
+            case "Tx Fees BTC":
+                thisChart = txFeesBTC;
+                break;
+            case "Tx Fees USD":
+                thisChart = txFeesUSD;
+                break;
+            case "Tx Fees SPB":
+                thisChart = txFeesSPB;
+                break;
+            case "Tx Size":
+                thisChart = txVSize;
+                break;
+            default:
+                console.log("NO CHART TYPE SELECTED");
+                break;
+        }
 
 
-    segwitTrace = {
-        y: thisChart.segwitData,
-        x: segwitBlockHeights,
-        name: 'segwit',
-        marker: { color: '#3D9970' },
-        type: 'box'
-    };
+        segwitTrace = {
+            y: thisChart.segwitData,
+            x: segwitBlockHeights,
+            name: 'segwit',
+            visible: chart === chartTypes[0] ? true : false,
+            marker: { color: '#3D9970' },
+            type: 'box',
+            boxpoints: false,
+            jitter: 0.3,
+            boxmean: false
+        };
 
-    legacyTrace = {
-        y: thisChart.legacyData,
-        x: legacyBlockHeights,
-        name: 'legacy',
-        marker: { color: '#FF4136' },
-        type: 'box'
-    };
+        legacyTrace = {
+            y: thisChart.legacyData,
+            x: legacyBlockHeights,
+            visible: chart === chartTypes[0] ? true : false,
+            name: 'legacy',
+            marker: { color: '#FF4136' },
+            type: 'box',
+            boxpoints: false,
+            jitter: 0.3,
+            boxmean: false
+        };
 
-    data = [segwitTrace, legacyTrace];
+        data.push(segwitTrace, legacyTrace);
+    });
+
 
     var layout = {
-        yaxis: thisChart.yAxis,
+        autosize: true,
+        title: "Tx Fees - Satoshis/VByte",
+        yaxis: txFeesSPB.yAxis,
         boxmode: 'group',
         hovermode: 'x',
+        margin: {
+            l: 60,
+            r: 0,
+            b: 40,
+            t: 40,
+            pad: 0
+        },
         xaxis: {
             title: "Block Height",
             dtick: 1,
@@ -156,10 +202,97 @@ function showChart(chartType) {
             tickvals: legacyBlockHeights,
             ticktext: legacyBlockHeights
         },
+        updatemenus: [{
+            y: 0.6,
+            x: 1.1,
+            yanchor: 'top',
+            buttons: [{
+                method: 'restyle',
+                args: ['boxmean', false],
+                label: 'No Mean'
+            }, {
+                method: 'restyle',
+                args: ['boxmean', true],
+                label: 'Mean'
+            }, {
+                method: 'restyle',
+                args: ['boxmean', 'sd'],
+                label: 'Mean + SD'
+            }]
+        }, {
+            y: 0.7,
+            x: 1.1,
+            yanchor: 'top',
+            buttons: [{
+                method: 'restyle',
+                args: ['boxpoints', false],
+                label: 'Whiskers Only'
+            }, {
+                method: 'restyle',
+                args: ['boxpoints', 'Outliers'],
+                label: 'Whiskers & Outliers'
+            }]
+        }, {
+            y: 0.8,
+            x: 1.1,
+            yanchor: 'top',
+            buttons: [{
+                method: 'restyle',
+                args: ['visible', [true, true, false, false, false, false, false, false]],
+                label: 'Tx Fees (Sats/VByte)'
+            }, {
+                method: 'restyle',
+                args: ['visible', [false, false, true, true, false, false, false, false]],
+                label: 'Tx Fees (BTC)'
+            }, {
+                method: 'restyle',
+                args: ['visible', [false, false, false, false, true, true, false, false]],
+                label: 'Tx Fees (USD)'
+            }, {
+                method: 'restyle',
+                args: ['visible', [false, false, false, false, false, false, true, true]],
+                label: 'Tx Size (VBytes)'
+            }]
+        }],
     };
 
-    Plotly.purge('datavisPlotly');
-    Plotly.newPlot('datavisPlotly', data, layout)
+    //Plotly.purge('datavisPlotly');
+    Plotly.plot('datavisPlotly', data, layout);
+
+    graphDiv.on('plotly_restyle', function (eventData) {
+
+        var update;
+
+        if (Object.keys(eventData[0] === 'visible')) {
+
+            if (eventData[0]["visible"][0] === true) {
+                update = {
+                    title: "Tx Fees (Satoshis / VByte)",
+                    yaxis: txFeesSPB.yAxis
+                };
+            };
+            if (eventData[0]["visible"][2] === true) {
+                update = {
+                    title: "Tx Fees (BTC)",
+                    yaxis: txFeesBTC.yAxis
+                };
+            };
+            if (eventData[0]["visible"][4] === true) {
+                update = {
+                    title: "Tx Fees (USD)",
+                    yaxis: txFeesUSD.yAxis
+                };
+            };
+            if (eventData[0]["visible"][6] === true) {
+                update = {
+                    title: "Tx Size (VBytes)",
+                    yaxis: txVSize.yAxis
+                };
+            };
+
+            Plotly.relayout(graphDiv, update);
+        }
+    });
 }
 
 //https://stackoverflow.com/questions/20811131/javascript-remove-outlier-from-an-array
@@ -195,7 +328,7 @@ function getOutlierRange(dataArray, outlierType, upperOnly) {
             minValue = upperOnly ? 0 : q1 - iqr * 1.5;
             break;
         default:
-            maxValue = q3 + iqr + (values[values.length - 1]) * 0.02;
+            maxValue = q3 + iqr * 1.5 + (values[values.length - 1]) * 0.02; //added 1.5 temporarily while only using mild and extreme
             minValue = upperOnly ? 0 : q1 - iqr;
             break;
     }
@@ -214,4 +347,8 @@ function outlierLevel(level) {
         showChart(selectedChartType);
     }
 }
+
+
+
+
 

@@ -4,27 +4,5 @@ block content
 
   div
     h4= title  
-
-    div(style="float:right;")
-      input(type="radio",name="outlierLevel",value="radioNoOutlier",id="radioNoOutlier",onclick="outlierLevel('none')",checked="true") 
-      | No Outliers
-      input(type="radio",name="outlierLevel",value="radioMildOutlier",id="radioMildOutlier",onclick="outlierLevel('mild')") 
-      | Mild Outliers
-      input(type="radio",name="outlierLevel",value="radioExtremeOutlier",id="radioExtremeOutlier",onclick="outlierLevel('extreme')") 
-      | Extreme Outliers
-  
-  div(style="clear:both;")
-    
-    div(style="float:right;")
-      input(type="radio",name="chartCategory",value="radioFeesSpB",id="radioFeesSpB",onclick="showChart('txFeesSPB')",checked="true") 
-      | Fees (Sat/VByte)
-      input(type="radio",name="chartCategory",value="radioTxFees",id="radioTxFees",onclick="showChart('txFeesBTC')") 
-      | Fees (BTC)
-      input(type="radio",name="chartCategory",value="radioTxFeesUSD",id="radioTxFeesUSD",onclick="showChart('txFeesUSD')") 
-      | Fees (USD)
-      input(type="radio",name="chartCategory",value="radioTxVSize",id="radioTxVSize",onclick="showChart('txVSize')") 
-      | Size (VBytes)
-
-  br
-  div.whatev#datavisPlotly
+  div.whatev#datavisPlotly(style="height:560px;")
   script(type="text/javascript", src="/javascripts/plotlyscript.js")
