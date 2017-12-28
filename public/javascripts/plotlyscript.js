@@ -32,7 +32,7 @@ fetch('./data.json').then(function (response) {
 }).then(function (data) {
     blockData = data.sort(function (a, b) { return a.Height - b.Height; });
 
-    var blocksBack = 12;
+    var blocksBack = 24;
 
     var sliced = blockData.slice(blockData.length - blocksBack, blockData.length);
 

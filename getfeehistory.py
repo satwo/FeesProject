@@ -36,7 +36,7 @@ firstSegwitBlock = 481824
 
 currentHeight = p.getblock(p.getbestblockhash())['height']
 
-startingHeight = currentHeight - 12 
+startingHeight = currentHeight - 24 
 
 # def nearest(items, pivot):
 #     return min(items, key=lambda x: abs(x - pivot))
