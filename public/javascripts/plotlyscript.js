@@ -22,10 +22,10 @@ function ChartDataWithLayout(segwitDataArray, legacyDataArray, yAxis, outlierRan
     this.outlierRange = outlierRange;
 }
 
-var txFeesBTC = new ChartDataWithLayout([], [], { autotick: true, title: 'Tx Fees (BTC)', hoverformat: '0.8f' }, new outlierRange(0, 0, 0)),
-    txFeesUSD = new ChartDataWithLayout([], [], { autotick: true, title: 'Tx Fees (USD)' }, new outlierRange(0, 0, 0)),
-    txFeesSPB = new ChartDataWithLayout([], [], { autotick: true, title: 'Tx Fees (SPB)' }, new outlierRange(0, 0, 0)),
-    txVSize = new ChartDataWithLayout([], [], { autotick: true, title: 'Tx Size (VBytes)' }, new outlierRange(0, 0, 0));
+var txFeesBTC = new ChartDataWithLayout([], [], { autotick: true, title: 'Tx Fees (BTC)', rangemode: 'nonnegative', hoverformat: '0.8f' }, new outlierRange(0, 0, 0)),
+    txFeesUSD = new ChartDataWithLayout([], [], { autotick: true, title: 'Tx Fees (USD)', rangemode: 'nonnegative', }, new outlierRange(0, 0, 0)),
+    txFeesSPB = new ChartDataWithLayout([], [], { autotick: true, title: 'Tx Fees (SPB)', rangemode: 'nonnegative', }, new outlierRange(0, 0, 0)),
+    txVSize = new ChartDataWithLayout([], [], { autotick: true, title: 'Tx Size (VBytes)', rangemode: 'nonnegative', }, new outlierRange(0, 0, 0));
 
 fetch('./data.json').then(function (response) {
     return response.json();
