@@ -14,6 +14,8 @@ r = requests.get('http://coincap.io/history/1day/BTC')
 usdData = r.json()
 priceData = usdData["price"]
 
+numBlocksBack = 24
+
 #bitcoin.SelectParams('regtest')
 #bitcoin.SelectParams('testnet')
 bitcoin.SelectParams('mainnet')
@@ -32,14 +34,16 @@ if os.path.exists(jsonfile):
 else:
     open(jsonfile, 'w')
 
+def removeOldRecords(height, jsonData):
+
+    newData = filter(lambda block: block['Height'] >= (height - numBlocksBack), jsonData)
+    return newData
+
 firstSegwitBlock = 481824
 
 currentHeight = p.getblock(p.getbestblockhash())['height']
-
-startingHeight = currentHeight - 24 
-
-# def nearest(items, pivot):
-#     return min(items, key=lambda x: abs(x - pivot))
+startingHeight = currentHeight - numBlocksBack 
+data = removeOldRecords(currentHeight, data)
 
 def process_block(height, blockhash):
 
@@ -65,6 +69,7 @@ def process_block(height, blockhash):
         add_new_block(height, blockhash)
 
 def add_new_block(height, blockhash):
+
     transactions = block['tx']
     total_fees = 0
     block_timestamp = block['time']
@@ -311,6 +316,8 @@ while startingHeight < p.getblock(p.getbestblockhash())['height']:
     process_block(startingHeight, blockhash)
 
 fw.close()
+
+print(len(data))
 
 sorted_list = sorted(data, key=lambda k: int(k['Height']), reverse=False)
 
