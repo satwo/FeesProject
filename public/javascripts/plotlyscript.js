@@ -5,7 +5,7 @@ var selectedOutlierLevel;
 var segwitBlockHeights = [];
 var legacyBlockHeights = [];
 
-var graphDiv = document.getElementById('datavisPlotly');
+var graphDiv;// = document.getElementById('datavisPlotly');
 
 var chartTypes = ['Tx Fees SPB', 'Tx Fees BTC', 'Tx Fees USD', 'Tx Size'];
 
@@ -22,7 +22,7 @@ function ChartDataWithLayout(segwitDataArray, legacyDataArray, yAxis, outlierRan
     this.outlierRange = outlierRange;
 }
 
-var txFeesBTC = new ChartDataWithLayout([], [], { autotick: true, title: 'Tx Fees (BTC)', rangemode: 'nonnegative', hoverformat: '0.8f' }, new outlierRange(0, 0, 0)),
+var txFeesBTC = new ChartDataWithLayout([], [], { autotick: true, title: 'Tx Fees (BTC)', rangemode: 'nonnegative', hoverformat: '0.8f'}, new outlierRange(0, 0, 0)),
     txFeesUSD = new ChartDataWithLayout([], [], { autotick: true, title: 'Tx Fees (USD)', rangemode: 'nonnegative', }, new outlierRange(0, 0, 0)),
     txFeesSPB = new ChartDataWithLayout([], [], { autotick: true, title: 'Tx Fees (SPB)', rangemode: 'nonnegative', }, new outlierRange(0, 0, 0)),
     txVSize = new ChartDataWithLayout([], [], { autotick: true, title: 'Tx Size (VBytes)', rangemode: 'nonnegative', }, new outlierRange(0, 0, 0));
@@ -202,6 +202,18 @@ function showChart(chartType) {
             tickvals: legacyBlockHeights,
             ticktext: legacyBlockHeights
         },
+        sliders : [{
+            len: 0.1,
+            y: 0.5,
+            x: 1.0,
+            yanchor: 'top',
+            //pad: {t: 30},
+            currentvalue: {
+
+              prefix: 'Zoom: '
+            },
+            steps: createSteps()
+          }],
         updatemenus: [{
             y: 0.6,
             x: 1.1,
@@ -258,6 +270,8 @@ function showChart(chartType) {
 
     //Plotly.purge('datavisPlotly');
     Plotly.plot('datavisPlotly', data, layout);
+
+    graphDiv = document.getElementById('datavisPlotly');
 
     graphDiv.on('plotly_restyle', function (eventData) {
 
@@ -346,6 +360,23 @@ function outlierLevel(level) {
 
         showChart(selectedChartType);
     }
+}
+
+function createSteps() {
+
+    var steps = [];
+
+    for (i = 1; i < 5; i++){
+
+        var step = {
+            method: 'relayout',
+            args: ['yaxis.range', [0, Math.pow(10, i)]]
+        };
+
+        steps.push(step);
+    }
+
+    return steps;
 }
 
 
