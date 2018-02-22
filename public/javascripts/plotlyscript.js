@@ -191,7 +191,7 @@ function showChart(chartType) {
         margin: {
             l: 60,
             r: 0,
-            b: 40,
+            b: 80,
             t: 40,
             pad: 0
         },
