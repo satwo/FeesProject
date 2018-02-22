@@ -1,7 +1,7 @@
 var blockRange;
 var blockData;
 var selectedChartType;
-var selectedOutlierLevel;
+//var selectedOutlierLevel;
 var segwitBlockHeights = [];
 var legacyBlockHeights = [];
 
@@ -9,23 +9,23 @@ var graphDiv;// = document.getElementById('datavisPlotly');
 
 var chartTypes = ['Tx Fees SPB', 'Tx Fees BTC', 'Tx Fees USD', 'Tx Size'];
 
-function outlierRange(extreme, mild, none) {
+/* function outlierRange(extreme, mild, none) {
     this.extreme = extreme;
     this.mild = mild;
     this.none = none;
-}
+} */
 
-function ChartDataWithLayout(segwitDataArray, legacyDataArray, yAxis, outlierRange) {
+function ChartDataWithLayout(segwitDataArray, legacyDataArray, yAxis){//, outlierRange) {
     this.segwitData = segwitDataArray;
     this.legacyData = legacyDataArray;
     this.yAxis = yAxis;
-    this.outlierRange = outlierRange;
+    //this.outlierRange = outlierRange;
 }
 
-var txFeesBTC = new ChartDataWithLayout([], [], { autotick: true, title: 'Tx Fees (BTC)', rangemode: 'nonnegative', hoverformat: '0.8f'}, new outlierRange(0, 0, 0)),
-    txFeesUSD = new ChartDataWithLayout([], [], { autotick: true, title: 'Tx Fees (USD)', rangemode: 'nonnegative', }, new outlierRange(0, 0, 0)),
-    txFeesSPB = new ChartDataWithLayout([], [], { autotick: true, title: 'Tx Fees (SPB)', rangemode: 'nonnegative', }, new outlierRange(0, 0, 0)),
-    txVSize = new ChartDataWithLayout([], [], { autotick: true, title: 'Tx Size (VBytes)', rangemode: 'nonnegative', }, new outlierRange(0, 0, 0));
+var txFeesBTC = new ChartDataWithLayout([], [], { autotick: true, title: 'Tx Fees (BTC)', rangemode: 'nonnegative', hoverformat: '0.8f'}),
+    txFeesUSD = new ChartDataWithLayout([], [], { autotick: true, title: 'Tx Fees (USD)', rangemode: 'nonnegative', }),
+    txFeesSPB = new ChartDataWithLayout([], [], { autotick: true, title: 'Tx Fees (SPB)', rangemode: 'nonnegative', }),
+    txVSize = new ChartDataWithLayout([], [], { autotick: true, title: 'Tx Size (VBytes)', rangemode: 'nonnegative', });
 
 fetch('./data.json').then(function (response) {
     return response.json();
@@ -61,24 +61,24 @@ function ParseData(blockData) {
         txFeesSPB.legacyData.push(...block.LegacyTxData.satsPerByte_list);
         txVSize.legacyData.push(...block.LegacyTxData.txVSize_list);
 
-        setUpperRange(block.SegWitTxData.txFees_list, txFeesBTC);
+/*         setUpperRange(block.SegWitTxData.txFees_list, txFeesBTC);
         setUpperRange(block.LegacyTxData.txFees_list, txFeesBTC);
         setUpperRange(block.SegWitTxData.txFeesUSD_list, txFeesUSD);
         setUpperRange(block.LegacyTxData.txFeesUSD_list, txFeesUSD);
         setUpperRange(block.SegWitTxData.satsPerByte_list, txFeesSPB);
         setUpperRange(block.LegacyTxData.satsPerByte_list, txFeesSPB);
         setUpperRange(block.SegWitTxData.txVSize_list, txVSize);
-        setUpperRange(block.LegacyTxData.txVSize_list, txVSize);
+        setUpperRange(block.LegacyTxData.txVSize_list, txVSize); */
 
     });
     selectedChartType = "txFeesSPB";
-    selectedOutlierLevel = "none";
+    //selectedOutlierLevel = "none";
     showChart(selectedChartType);
 
     //console.log(txFeesBTC.outlierRange);
 }
 
-function setUpperRange(data, chart) {
+/* function setUpperRange(data, chart) {
 
     var thisUpperRangeOutlierExtreme = getOutlierRange(data, 'extreme', true)[1];
     var thisUpperRangeOutlierMild = getOutlierRange(data, 'mild', true)[1]
@@ -88,13 +88,15 @@ function setUpperRange(data, chart) {
     chart.outlierRange.extreme = thisUpperRangeOutlierExtreme > chart.outlierRange.extreme ? thisUpperRangeOutlierExtreme : chart.outlierRange.extreme;
     chart.outlierRange.mild = thisUpperRangeOutlierMild > chart.outlierRange.mild ? thisUpperRangeOutlierMild : chart.outlierRange.mild;
     chart.outlierRange.none = thisUpperRangeOutlier > chart.outlierRange.none ? thisUpperRangeOutlier : chart.outlierRange.none;
-}
+} */
 
 function showChart(chartType) {
 
     selectedChartType = chartType;
     var thisChart;
     var data = [];
+
+    
 
     /*     switch (chartType) {
             case "txFeesBTC":
@@ -209,8 +211,7 @@ function showChart(chartType) {
             yanchor: 'top',
             //pad: {t: 30},
             currentvalue: {
-
-              prefix: 'Zoom: '
+              prefix: 'QuickZoom: '
             },
             steps: createSteps()
           }],
@@ -280,27 +281,76 @@ function showChart(chartType) {
         if (Object.keys(eventData[0] === 'visible')) {
 
             if (eventData[0]["visible"][0] === true) {
+                selectedChartType = "txFeesSPB";
                 update = {
                     title: "Tx Fees (Satoshis / VByte)",
-                    yaxis: txFeesSPB.yAxis
+                    yaxis: txFeesSPB.yAxis,
+
+                    sliders: [{
+                        len: 0.1,
+                        y: 0.5,
+                        x: 1.0,
+                        yanchor: 'top',
+                        //pad: {t: 30},
+                        currentvalue: {
+                          prefix: 'QuickZoom: '
+                        },
+                        steps: createSteps()
+                      }]
                 };
             };
             if (eventData[0]["visible"][2] === true) {
+                selectedChartType = "txFeesBTC";
                 update = {
                     title: "Tx Fees (BTC)",
-                    yaxis: txFeesBTC.yAxis
+                    yaxis: txFeesBTC.yAxis,
+                    sliders: [{
+                        len: 0.1,
+                        y: 0.5,
+                        x: 1.0,
+                        yanchor: 'top',
+                        //pad: {t: 30},
+                        currentvalue: {
+                          prefix: 'QuickZoom: '
+                        },
+                        steps: createSteps()
+                      }]
                 };
             };
             if (eventData[0]["visible"][4] === true) {
+                selectedChartType = "txFeesUSD";
                 update = {
                     title: "Tx Fees (USD)",
-                    yaxis: txFeesUSD.yAxis
+                    yaxis: txFeesUSD.yAxis,
+                    sliders: [{
+                        len: 0.1,
+                        y: 0.5,
+                        x: 1.0,
+                        yanchor: 'top',
+                        //pad: {t: 30},
+                        currentvalue: {
+                          prefix: 'QuickZoom: '
+                        },
+                        steps: createSteps()
+                      }]
                 };
             };
             if (eventData[0]["visible"][6] === true) {
+                selectedChartType = "txVSize";
                 update = {
                     title: "Tx Size (VBytes)",
-                    yaxis: txVSize.yAxis
+                    yaxis: txVSize.yAxis,
+                    sliders: [{
+                        len: 0.1,
+                        y: 0.5,
+                        x: 1.0,
+                        yanchor: 'top',
+                        //pad: {t: 30},
+                        currentvalue: {
+                          prefix: 'QuickZoom: '
+                        },
+                        steps: createSteps()
+                      }]
                 };
             };
 
@@ -310,7 +360,7 @@ function showChart(chartType) {
 }
 
 //https://stackoverflow.com/questions/20811131/javascript-remove-outlier-from-an-array
-function getOutlierRange(dataArray, outlierType, upperOnly) {
+/*function getOutlierRange(dataArray, outlierType, upperOnly) {
 
     let values, q1, q3, iqr, maxValue, minValue, multiple;
 
@@ -332,7 +382,7 @@ function getOutlierRange(dataArray, outlierType, upperOnly) {
 
     iqr = q3 - q1; //inner-quartile range
 
-    switch (outlierType) {
+     switch (outlierType) {
         case "extreme":
             maxValue = values[values.length - 1] + (values[values.length - 1]) * 0.02; //q3 + iqr * 3;
             minValue = upperOnly ? 0 : q1 - iqr * 3;
@@ -344,34 +394,65 @@ function getOutlierRange(dataArray, outlierType, upperOnly) {
         default:
             maxValue = q3 + iqr * 1.5 + (values[values.length - 1]) * 0.02; //added 1.5 temporarily while only using mild and extreme
             minValue = upperOnly ? 0 : q1 - iqr;
-            break;
+            break; 
     }
 
 
     minValue = minValue < 0 ? 0 : minValue;
 
     return [minValue, maxValue];
-}
+}*/
 
-function outlierLevel(level) {
+/* function outlierLevel(level) {
 
     if (level !== selectedOutlierLevel) {
         selectedOutlierLevel = level;
 
         showChart(selectedChartType);
     }
-}
+} */
 
 function createSteps() {
 
+    var thisArray;
+
+        switch (selectedChartType) {
+            case "txFeesBTC":
+                thisArray = txFeesBTC.legacyData;
+                break;
+            case "txFeesUSD":
+                thisArray = txFeesUSD.legacyData;
+                break;
+            case "txFeesSPB":
+                thisArray = txFeesSPB.legacyData;
+                break;
+            case "txVSize":
+                thisArray = txVSize.legacyData;
+                break;
+                default:
+                console.log("NO CHART TYPE SELECTED");
+                break;
+        }
+
+    var max = Math.max.apply(Math, thisArray);
+    console.log(max);
+
     var steps = [];
 
-    for (i = 1; i < 5; i++){
+    for (i = 0; i < 4; i++){
+
+        // var step = {
+        //     method: 'relayout',
+        //     args: ['yaxis.range', [0, Math.pow(10, i)]]
+        // };
+
+        var zoom = Math.pow(10, i)
 
         var step = {
             method: 'relayout',
-            args: ['yaxis.range', [0, Math.pow(10, i)]]
-        };
+            args: ['yaxis.range', [0, (max / zoom)]],
+            label: zoom + "x"
+        }
 
         steps.push(step);
     }
